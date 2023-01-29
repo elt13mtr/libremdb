@@ -4,12 +4,14 @@ import Title from './Title';
 import Keyword from './Keyword';
 import Find from 'src/interfaces/shared/search';
 import { getResTitleTypeHeading } from 'src/utils/helpers';
+import { useRouter } from 'next/router';
 import styles from 'src/styles/modules/components/find/results.module.scss';
 
 type Props = {
   results: Find | null;
   className?: string;
   title: string;
+  exactMatch: boolean;
 };
 
 const resultsExist = (results: Props['results']) => {
@@ -26,7 +28,8 @@ const resultsExist = (results: Props['results']) => {
 };
 
 // MAIN COMPONENT
-const Results = ({ results, className, title }: Props) => {
+const Results = ({ results, className, title, exactMatch }: Props) => {
+  const router = useRouter();
   if (!resultsExist(results))
     return (
       <h1 className={`heading heading__primary ${className}`}>
@@ -40,9 +43,21 @@ const Results = ({ results, className, title }: Props) => {
     meta.titleType
   );
 
+  const clickHandler = () => {
+    const url = `/find?q=${title}` + (exactMatch ? '' : '&exact=true');
+    router.push(url);
+  };
+
+  const matchButtonText = exactMatch ? "Popular Matches >" : "Exact Matches >";
+
   return (
     <article className={`${className} ${styles.results}`}>
       <h1 className='heading heading__primary'>Results for '{title}'</h1>
+        <div className={styles.buttons}>
+            <button onClick={clickHandler} type='button' className={styles.button}>
+                {matchButtonText}
+            </button>
+        </div>
       <div className={styles.results__list}>
         {!!titles.length && (
           <section className={styles.titles}>
