@@ -11,9 +11,9 @@ import { cleanQueryStr } from 'src/utils/helpers';
 import styles from 'src/styles/modules/pages/find/find.module.scss';
 
 type Props =
-  | { data: { title: string; results: Find }; error: null }
-  | { data: { title: null; results: null }; error: null }
-  | { data: { title: string; results: null }; error: AppError };
+  | { data: { title: string; exactMatch: boolean; results: Find }; error: null }
+  | { data: { title: null; exactMatch: boolean; results: null }; error: null }
+  | { data: { title: string; exactMatch: boolean; results: null }; error: AppError };
 
 const getMetadata = (title: string | null) => ({
   title: title || 'Search',
@@ -22,7 +22,7 @@ const getMetadata = (title: string | null) => ({
     : 'Search for anything on libremdb, a free & open source IMDb front-end',
 });
 
-const BasicSearch = ({ data: { title, results }, error }: Props) => {
+const BasicSearch = ({ data: { title, exactMatch, results }, error }: Props) => {
   if (error)
     return <ErrorInfo message={error.message} statusCode={error.statusCode} />;
 
@@ -31,7 +31,7 @@ const BasicSearch = ({ data: { title, results }, error }: Props) => {
       <Meta {...getMetadata(title)} />
       <Layout className={`${styles.find} ${!title && styles.find__home}`}>
         {title && ( // only showing when user has searched for something
-          <Results results={results} title={title} className={styles.results} />
+          <Results results={results} title={title} className={styles.results} exactMatch={exactMatch} />
         )}
         <Form className={styles.form} />
       </Layout>
@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     const res = await basicSearch(queryStr);
 
     return {
-      props: { data: { title: query, results: res }, error: null },
+      props: { data: { title: query, exactMatch: queryObj.exact, results: res }, error: null },
     };
   } catch (error: any) {
     const { message, statusCode } = error;

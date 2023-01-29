@@ -23,3 +23,18 @@
 
   }
 }
+
+.button {
+
+  --text: var(--clr-text-muted);
+
+  padding: var(--spacer-0) var(--spacer-0);
+  font: inherit;
+  font-size: var(--fs-5);
+
+  background: transparent;
+  color: var(--text);
+  border: 2px solid currentColor;
+  border-radius: 5px;
+  cursor: pointer;
+}
